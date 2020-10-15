@@ -19,12 +19,11 @@ const assigner = (teamNumber) => {
     for(let i = 0; i < mixedArray.length; i++)
         assignedGroup[i%teamNumber].push(mixedArray[i]); //concat한 배열에서 한명씩 꺼내 Group 객체들에 돌아가며 넣습니다.
 
-    assignedGroup.forEach( function(group){
-        console.log(`[${group.number}조]`);
-        group.members.forEach(function(member){ 
-            console.log(member);
-        })
-    })
+    return assignedGroup;
 }
 
-assigner(6);
+//main 함수
+const printFunc = require('./module/printer')   //출력을 위한 모듈
+const result = assigner(6);
+
+result.forEach( printFunc ) //group별로 출력
