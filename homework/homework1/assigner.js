@@ -13,7 +13,7 @@ const assigner = (teamNumber) => {
         ...mixedArray.filter((member) => member["status"]==='YB')
     ]
 
-    assignedGroup = new Array();    //Group 클래스의 배열
+    let assignedGroup = new Array();    //Group 클래스의 배열
     for(let i = 0; i < teamNumber; i++) assignedGroup.push(new Group(i+1));  //Group 객체들을 생성
 
     for(let i = 0; i < mixedArray.length; i++)
