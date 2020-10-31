@@ -7,7 +7,7 @@ const assigner = (teamNumber) => {
 
     let mixedArray = shuffle(members)   //무작위로 섞습니다
 
-    //무작위로 섞인 배열에서 OB와 YB만을 필터링하여 앞 뒤로 붙입니다.
+    //무작위로 섞인 배열에서 OB와 YB만을 `필터링하여 앞 뒤로 붙입니다.
     mixedArray = [
         ...mixedArray.filter((member) => member["status"]==='OB'),
         ...mixedArray.filter((member) => member["status"]==='YB')
