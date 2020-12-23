@@ -86,6 +86,7 @@ router.get('/', async (req, res) => {
       attributes: ['id', 'email', 'userName'],
     });
     console.log(users);
+
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.USER_READ_ALL_SUCCESS, users));
   } catch (error) {
     console.error(error);
@@ -104,6 +105,7 @@ router.get('/:id', async (req, res) => {
       },
       attributes: ['id', 'email', 'userName'],
     });
+
     if (!user) {
       console.log('존재하지 않는 아이디 입니다.');
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
@@ -118,7 +120,7 @@ router.get('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  //2. id값이 유효한지 체크! 존재하지 않는 아이디면 NO_USER 반환
+
   try {
     let user = await User.findOne({
       where: {
@@ -126,6 +128,7 @@ router.delete('/:id', async (req, res) => {
       },
       attributes: ['id', 'email', 'userName'],
     });
+
     if (!user) {
       console.log('존재하지 않는 아이디 입니다.');
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
@@ -152,8 +155,8 @@ router.put('/:id', async (req, res) => {
     console.log('필요한 값이 없습니다!');
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
-  try {
 
+  try {
     const alreadyEmail = await User.findOne({
       where: {
         email: email,
@@ -165,7 +168,6 @@ router.put('/:id', async (req, res) => {
     }
 
     const salt = crypto.randomBytes(64).toString('base64');
-
     const hashedPassword = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('base64');
 
     const user = await User.update({
