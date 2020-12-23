@@ -115,4 +115,76 @@ router.get('/:id', async (req, res) => {
     return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
   }
 })
+
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  //2. id값이 유효한지 체크! 존재하지 않는 아이디면 NO_USER 반환
+  try {
+    let user = await User.findOne({
+      where: {
+        id: id,
+      },
+      attributes: ['id', 'email', 'userName'],
+    });
+    if (!user) {
+      console.log('존재하지 않는 아이디 입니다.');
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+    }
+
+    user = await User.destroy({
+      where: {
+        id: id
+      }
+    });
+
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.MEMBER_DELETE_SUCCESS, user));
+  } catch (error) {
+    console.error(error);
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
+  }
+})
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { email, password, userName } = req.body;
+
+  if (!email || !password || !userName) {
+    console.log('필요한 값이 없습니다!');
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  }
+  try {
+
+    const alreadyEmail = await User.findOne({
+      where: {
+        email: email,
+      }
+    });
+    if (alreadyEmail.id != id && alreadyEmail) {
+      console.log('이미 존재하는 이메일 입니다.');
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_ID));
+    }
+
+    const salt = crypto.randomBytes(64).toString('base64');
+
+    const hashedPassword = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('base64');
+
+    const user = await User.update({
+      email: email,
+      password: hashedPassword,
+      userName: userName,
+      salt: salt,
+    }, {
+      where: {
+        id: id
+      }
+    });
+    console.log(user);
+
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.MEMBER_UPDATE_SUCCESS, { id: user.id, email, userName }));
+  } catch (error) {
+    console.error(error);
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SIGN_UP_FAIL));
+  }
+})
+
 module.exports = router;
