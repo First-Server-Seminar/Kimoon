@@ -13,14 +13,14 @@ module.exports = {
     }
     console.log(req.file);
     console.log(req.body);
-    
+
     try {
       const post = await Post.create({
         title,
         contents,
         postImageUrl: imageUrl
       });
-  
+
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_POST_SUCCESS, post));
     } catch (error) {
       console.log(error);
